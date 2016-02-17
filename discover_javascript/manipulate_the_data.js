@@ -28,9 +28,16 @@ function streamToString(stream, cb) {
 
 var output = function (jsonString)
 {
-    console.log(typeof jsonString);
-    console.log(jsonString);
+      /* console.log(typeof jsonString);                                                                                                                             
+	  console.log(jsonString);*/
+    const fs = require('fs');
+    fs.writeFile("/tmp/36", jsonString, function(err) {
+	if (err) {
+	    return console.log(err);
+	}
+    });
+    var obj = jsonString.items[full_name];
+    console.log(JSON.parse(obj));    
 }
-
-
+                                              
 
