@@ -10,7 +10,9 @@ url = 'https://api.github.com/search/repositories?q=language:python&sort=stars&o
 req = urllib2.Request(url, None, request_headers)
 response = urllib2.urlopen(req)
 the_page = response.read()
-print (the_page)
+# print (the_page)
+file = open('/tmp/36', 'w+')
+file.write(the_page)
+file.close
 
-
-
+print "The file was saved!"
