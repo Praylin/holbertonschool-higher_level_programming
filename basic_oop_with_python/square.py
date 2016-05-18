@@ -1,12 +1,8 @@
-"""Find the area of a circle"""
-
-import math
-
-class Circle:
+class Square:
     #constructor
-    def __init__(self, radius):
-        self.__radius = radius
-        self.name = "circle"
+    def __init__(self, side_length):
+        self.__side_length = side_length
+        self.name = "square"
 
     #destructor
     def __del__(self):
@@ -20,14 +16,6 @@ class Circle:
     def set_color(self, color):
         self.__color = color
 
-    #getter for radius
-    def get_radius(self):
-        return self.__radius
-
-    #setter for radius
-    def set_radius(self, radius):
-        self.__radius = radius
-
     #setter for center
     def set_center(self, center):
         self.__center = [0, 0]
@@ -36,6 +24,5 @@ class Circle:
     def get_center(self):
         return self.__center
 
-    #finds and return area
     def area(self):
-        return math.pi * self.__radius * self.__radius
+        return self.__side_length * self.__side_length
