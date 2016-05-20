@@ -1,3 +1,5 @@
+from datetime import date
+
 class Person:
 
     #Class attributes
@@ -23,7 +25,7 @@ class Person:
         if (not isinstance(eyes_color, basestring)) or (not eyes_color in Person.EYES_COLORS):
             raise Exception("eyes_color is not valid")
         self.__eyes_color = eyes_color
-        
+
     #destructor
     def __del__(self):
         pass
@@ -46,3 +48,76 @@ class Person:
 
     def get_last_name(self):
         return self.last_name
+
+    #Method which returns first name and last name
+    def __str__(self):
+        return "%s %s" %(self.__first_name, self.last_name)
+
+    #Method which checks whether genre is Male
+    def is_male(self):
+        if self.__genre is "Male":
+            return True
+        else:
+            return False
+
+    #Method to find the age
+    def age(self):
+        today = date.today()
+        return today.year - self.__date_of_birth[2] - ((today.month, today.day) < (self.__date_of_birth[1], self.__date_of_birth[0]))
+
+class Baby(Person):
+
+    def need_help(self):
+        return True
+
+    def is_young(self):
+        return True
+
+    def can_run(self):
+        return False
+
+    def can_vote(self):
+        return False
+
+
+class Teenager(Person):
+
+    def can_run(self):
+        return True
+
+    def is_young(self):
+        return True
+
+    def need_help(self):
+        return False
+
+    def can_vote(self):
+        return False
+
+class Adult(Person):
+
+    def can_run(self):
+        return True
+
+    def can_vote(self):
+        return True
+
+    def need_help(self):
+        return False
+
+    def is_young(self):
+        return False
+
+class Senior(Person):
+
+    def need_help(self):
+        return True
+
+    def can_vote(self):
+        return True
+
+    def is_young(self):
+        return False
+
+    def can_run(self):
+        return False
