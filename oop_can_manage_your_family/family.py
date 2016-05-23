@@ -1,4 +1,22 @@
-from datetime import date
+import json
+import os.path
+
+def save_to_file(list, filename):
+    with open(filename, 'w') as outfile:
+        json.dump(list, outfile)
+#
+def load_from_file(filename):
+    # data = []
+    a = Person(2, "gfdhf", [07, 23, 1985], "Male", "Blue")
+    if (isinstance(filename, basestring) and os.path.isfile(filename)):
+        with open(filename, 'r') as data_file:
+            data = json.load(data_file)
+        for i in data:
+            j = a.load_from_json(i)
+            a.json ()
+    else:
+        raise Exception("filename is not valid or doesn't exist")
+
 
 class Person:
 
@@ -10,9 +28,10 @@ class Person:
     def __init__(self, ide, first_name, date_of_birth, genre, eyes_color):
 
         self.last_name = ""
+        self.is_married_to = 0
         if (ide < 0) or (not isinstance(ide, int)):
             raise Exception("id is not an integer")
-        self.__id = ide
+        self.__id = id
         if (not isinstance(first_name, basestring)) or (not first_name):
             raise Exception("string is != string")
         self.__first_name = first_name
@@ -61,9 +80,25 @@ class Person:
             return False
 
     #Method to find the age
+    #Age has to be computed with the fix date: 05/20/2016
     def age(self):
-        today = date.today()
-        return today.year - self.__date_of_birth[2] - ((today.month, today.day) < (self.__date_of_birth[1], self.__date_of_birth[0]))
+        return 2016 - self.__date_of_birth[2] - ((05, 20) < (self.__date_of_birth[1], self.__date_of_birth[0]))
+
+    #Function returns a hash
+    def json(self):
+        return {'id' : self.__id, 'genre' : self.__genre, 'eyes_color' : self.__eyes_color, 'date_of_birth' : self.__date_of_birth, 'first_name' : self.__first_name, 'last_name' : self.last_name}
+
+    #Function sets values for all keys if the argument is a hash, otherwise raise an exception
+    def load_from_json(self, json):
+        if isinstance(json, dict):
+            self.__id = json['id']
+            self.__genre = json['genre']
+            self.__eyes_color = json['eyes_color']
+            self.__date_of_birth = json['date_of_birth']
+            self.__first_name = json['first_name']
+            self.last_name = json['last_name']
+        else:
+            raise Exception("json is not valid")
 
 class Baby(Person):
 
@@ -77,6 +112,9 @@ class Baby(Person):
         return False
 
     def can_vote(self):
+        return False
+
+    def can_be_married(self):
         return False
 
 
@@ -94,6 +132,9 @@ class Teenager(Person):
     def can_vote(self):
         return False
 
+    def can_be_married(self):
+        return False
+
 class Adult(Person):
 
     def can_run(self):
@@ -108,6 +149,9 @@ class Adult(Person):
     def is_young(self):
         return False
 
+    def can_be_married(self):
+        return True
+
 class Senior(Person):
 
     def need_help(self):
@@ -121,3 +165,6 @@ class Senior(Person):
 
     def can_run(self):
         return False
+
+    def can_be_married(self):
+        return True
