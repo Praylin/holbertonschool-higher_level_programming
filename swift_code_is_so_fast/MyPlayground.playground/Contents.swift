@@ -2,21 +2,20 @@
 
 import UIKit
 
-var name1 = "Tim McGraw"
-var name2 = "Romeo"
-var both = name1 + " and " + name2
+enum WeatherType {
+    case Sun
+    case Cloud
+    case Rain
+    case Wind
+    case Snow
+}
 
-var a = 1.1
-var b = 2.2
-var c = a + b
+func getHaterStatus(weather: WeatherType) -> String? {
+    if weather == .Sun {
+        return nil
+    } else {
+        return "Hate"
+    }
+}
 
-c > 3
-c >= 3
-c > 4
-c < 4
-
-var stayOutTooLate = true
-stayOutTooLate
-!stayOutTooLate
-
-"Your name is \(name1)"
+getHaterStatus(.Cloud)
