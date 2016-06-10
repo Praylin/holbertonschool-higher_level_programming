@@ -1,30 +1,46 @@
 import peewee
+#creating instance of instance of peewee.SqliteDatabase
 my_models_db = peewee.SqliteDatabase("my_models.db", pragmas = (('foreign_keys', True), ))
 
+#Class BaseModel inherited from peewee.Model
 class BaseModel(peewee.Model):
+    id = peewee.PrimaryKeyField(unique = True)
     class Meta:
         database = my_models_db
         order_by = ('id', )
 
+'''class School inherited from BaseModel:
+    has a 'name' variable and a function which
+    returns the data in the table School'''
 class School(BaseModel):
-    name = peewee.CharField(128, default = "")
+    name = peewee.CharField(128, null = False)
     def __str__(self):
-        return "School: " + self.name + " (" + str(id) + ")"
+        return "School: " + self.name + " (" + str(self.id) + ")"
 
+'''class Batch inherited from BaseModel: has a
+    foreign_key of the table School, a name variable
+    and a function which returns all the data of the
+    table Batch'''
 class Batch(BaseModel):
     school = peewee.ForeignKeyField(School, related_name = "batches", on_delete = "CASCADE")
-    name = peewee.CharField(128, default = "")
+    name = peewee.CharField(128, null = False)
     def __str__(self):
-        return "Batch: " + self.name + " (" + id + ")"
+        return "Batch: " + self.name + " (" + str(self.id) + ")"
 
+'''class User inherited from BaseModel: has variables
+    first_name, last_name and age and a function which
+    returns all the data of the table User'''
 class User(BaseModel):
     first_name = peewee.CharField(128, default = "")
     last_name = peewee.CharField(128, null = False)
     age = peewee.IntegerField(null = False)
     def __str__(self):
-        return "User: " + first_name + last_name + " (" + id + ")"
+        return "User: " + self.first_name + self.last_name + " (" + str(self.id) + ")"
 
+'''class Student inherited from User: has a foreign_key
+    from table Batch and a function which returns all the
+    data of the table Student'''
 class Student(User):
     batch = peewee.ForeignKeyField(Batch, related_name = "students", on_delete = "CASCADE")
     def __str__(self):
-        return "Student: " + first_name + last_name + " (" + id + ")" + "part of the batch: " + batch
+        return "Student: " + self.first_name + " " + self.last_name + " (" + str(self.id) + ")" + " part of the batch: " + str(self.batch)
