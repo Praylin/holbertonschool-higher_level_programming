@@ -5,6 +5,7 @@ import sys
 #If the user doesn't enter any argument
 if (len(sys.argv) < 2):
     print "Please enter an action"
+
 #First argument should be an action:
 else:
     #If the argument is 'create', create the following tables
@@ -29,29 +30,22 @@ else:
         except peewee.OperationalError:
             pass
 
-    #If the first argument is 'print'
+    #If the first argument is 'print', print the records of the corresponding tables
     elif(sys.argv[1] == 'print'):
         if(sys.argv[2] == "school"):
-            school_data = School.select(School.name, School.id)
-            for s in school_data:
-                print "School: %s (%d)" %(s.name, s.id)
+            for data in School.select():
+                print data
         elif(sys.argv[2] == "batch"):
-            batch_data = Batch.select(Batch.name, Batch.id)
-            for s in batch_data:
-                print "Batch: %s (%d)" %(s.name, s.id)
+            for data in Batch.select():
+                print data
         elif(sys.argv[2] == "user"):
-            user_data = User.select(User.first_name, User.last_name, User.age, User.id)
-            for s in user_data:
-                print "User: %s %s %d (%d)" %(s.first_name, s.last_name, s.age, s.id)
+            for data in User.select():
+                print data
         elif(sys.argv[2] == "student"):
+            for data in Student.select():
+                print data
 
-                student_data = Student.select().join(Batch)
-            #batch_data = Batch.select(Batch.name, Batch.id)
-                print student_data
-                for s in student_data:
-                    print "Student: %s %s (%d) part of the batch: Batch: " %(s.first_name, s.last_name, s.id)
-
-    #If the first argument is insert
+    #If the first argument is insert, insert data into corresponding tables
     elif(sys.argv[1] == 'insert'):
         if (sys.argv[2] == "school"): #Insert data in school table
             school_data = School.create(name = sys.argv[3])
@@ -74,34 +68,67 @@ else:
         else:
             print "No table with that name"
 
-    #If the first argument is delete
+    #If the first argument is delete, delete the record from the corresponding table
     elif(sys.argv[1] == 'delete'):
         if (sys.argv[2] == "school"):
-            school = School.get(School.id == sys.argv[3])
-            if school.exists():
+            try:
+                school = School.get(School.id == sys.argv[3])
+                print "Delete" + str(school)
                 school.delete_instance()
-            else:
+            except:
                 print "Nothing to delete"
+
         elif (sys.argv[2] == "batch"):
-            batch = Batch.get(Batch.id == sys.argv[3])
-            if batch.exists():
+            try:
+                batch = Batch.get(Batch.id == sys.argv[3])
+                print "Delete" + str(batch)
                 batch.delete_instance()
-            else:
+            except:
                 print "Nothing to delete"
+
         elif (sys.argv[2] == "user"):
-            user = User.get(User.id == sys.argv[3])
-            if user.exists():
+            try:
+                user = User.get(User.id == sys.argv[3])
+                print "Delete" + str(user)
                 user.delete_instance()
-            else:
+            except:
                 print "Nothing to delete"
+
         elif (sys.argv[2] == "student"):
-            student = Student.get(Student.id == sys.argv[3])
-            if student.exists():
+            try:
+                student = Student.get(Student.id == sys.argv[3])
+                print "Delete: " + str(student)
                 student.delete_instance()
-            else:
+            except:
                 print "Nothing to delete"
+
         else:
             print "Enter a valid model/table name"
+
+    #If first argument is print_batch_by_school, print the batches in a school corresponding to the school_id
+    elif (sys.argv[1] == "print_batch_by_school"):
+        try:
+            print Batch.get(school = sys.argv[2])
+        except:
+            print "School not found"
+
+    #If the first argument is print_student_by_batch,
+    elif (sys.argv[1] == "print_student_by_batch"):
+        try:
+            for data in Student.select():
+                data = Student.get(batch = sys.argv[2])
+                print data
+
+        except:
+            print "Batch not found"
+
+    elif (sys.argv[1] == "print_student_by_school"):
+        try:
+            for data in Student.select():
+                data = Student.get(id = sys.argv[2])
+                print data
+        except:
+            print "School not found"
     #if the first argument is not part of this list,
     else:
         print "Undefined action", sys.argv[1]
