@@ -30,6 +30,11 @@ else:
         except peewee.OperationalError:
             pass
 
+        try:
+            Student.create_table()
+        except peewee.OperationalError:
+            pass
+
     #If the first argument is 'print', print the records of the corresponding tables
     elif(sys.argv[1] == 'print'):
         if(sys.argv[2] == "school"):
@@ -43,6 +48,9 @@ else:
                 print data
         elif(sys.argv[2] == "student"):
             for data in Student.select():
+                print data
+        elif(sys.argv[3] == "exercise"):
+            for data in Exercise.select():
                 print data
 
     #If the first argument is insert, insert data into corresponding tables
@@ -58,7 +66,7 @@ else:
             data = __str__()
             print data
         elif (sys.argv[2] == "student"): #Insert data in student table
-            if(len(sys.argv) == 6): #If user enters on last_name
+            if(len(sys.argv) == 6): #If user enters only last_name
                 student_data = Student.create(batch = sys.argv[3], age = sys.argv[4], last_name = sys.argv[5])
             elif(len(sys.argv) == 7): #If user enters both last_name and first_name
                 student_data = Student.create(batch = sys.argv[3], age = sys.argv[4], last_name = sys.argv[5], first_name =sys.argv[6])
@@ -73,7 +81,7 @@ else:
         if (sys.argv[2] == "school"):
             try:
                 school = School.get(School.id == sys.argv[3])
-                print "Delete" + str(school)
+                print "Delete: " + str(school)
                 school.delete_instance()
             except:
                 print "Nothing to delete"
@@ -81,7 +89,7 @@ else:
         elif (sys.argv[2] == "batch"):
             try:
                 batch = Batch.get(Batch.id == sys.argv[3])
-                print "Delete" + str(batch)
+                print "Delete: " + str(batch)
                 batch.delete_instance()
             except:
                 print "Nothing to delete"
@@ -89,7 +97,7 @@ else:
         elif (sys.argv[2] == "user"):
             try:
                 user = User.get(User.id == sys.argv[3])
-                print "Delete" + str(user)
+                print "Delete: " + str(user)
                 user.delete_instance()
             except:
                 print "Nothing to delete"
@@ -112,23 +120,67 @@ else:
         except:
             print "School not found"
 
-    #If the first argument is print_student_by_batch,
+    #If the first argument is print_student_by_batch, print all the student details corresponding to the batch_id
     elif (sys.argv[1] == "print_student_by_batch"):
         try:
-            for data in Student.select():
-                data = Student.get(batch = sys.argv[2])
+            for data in Student.select().where(Student.batch == sys.argv[2]):
                 print data
-
         except:
             print "Batch not found"
 
+    #If the first argument is print_student_by_school, print all the student details corresponding to the school_id
     elif (sys.argv[1] == "print_student_by_school"):
         try:
-            for data in Student.select():
-                data = Student.get(id = sys.argv[2])
-                print data
+            for student in Student.select().join(Batch).where(Batch.school_id == sys.argv[2]):
+                print student, Batch.get(id = sys.argv[2])
         except:
             print "School not found"
+
+    #If the first argument is print_family, print all the student details with corresponding last_name
+    elif (sys.argv[1] == "print_family"):
+            for data in Student.select().where(Student.last_name == sys.argv[2]):
+                print data
+
+    #If the first argument is age_average, print the average of all the student ages
+    elif (sys.argv[1] == "age_average"):
+        ages = []
+        age_sum = 0
+        if (len(sys.argv) == 3): #age_average if batch_id is provided
+            data = Student.select(Student.age).where(Student.batch == sys.argv[2])
+        else:
+            data = Student.select(Student.age)
+        for i in data:
+            ages.append(i.age)
+            age_sum = age_sum + i.age
+        length = len(ages)
+        print age_sum/length
+
+    #If the first argument is change_batch, get the corresponding student_data and batch_data based on arguments 2 and 3
+    elif (sys.argv[1] == "change_batch"):
+        student_data = Student.get(Student.id == sys.argv[2])
+        batch_data = Batch.get(Batch.id == sys.argv[3])
+        if (student_data.batch == batch_data): #If the student already present in the batch
+            print "%s already in %s" % (student_data, batch_data)
+        else: #If the student not present in the batch, save the particular student data in the corresponding batch
+            print "%s has been moved to %s" % (student_data, batch_data)
+            student_data.batch = sys.argv[3]
+            student_data.save()
+
+    #If the first argument is print_all , print all the data in the below format
+    '''school 1>
+            <batch 1>
+                <student 1>
+                <student 2>
+            <batch 2>
+                <student 3>
+                ...'''
+    elif (sys.argv[1] == "print_all"):
+        for school_data in School.select():
+            print school_data
+            for batch_data in Batch.select().where(Batch.school == school_data):
+                print "\t" + str(batch_data)
+                for student_data in Student.select().where(Student.batch == batch_data):
+                    print "\t \t" + str(student_data)
     #if the first argument is not part of this list,
     else:
         print "Undefined action", sys.argv[1]

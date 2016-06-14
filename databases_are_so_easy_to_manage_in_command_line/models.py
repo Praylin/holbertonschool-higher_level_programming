@@ -44,3 +44,14 @@ class Student(User):
     batch = peewee.ForeignKeyField(Batch, related_name = "students", on_delete = "CASCADE")
     def __str__(self):
         return "Student: " + self.first_name + " " + self.last_name + " (" + str(self.id) + ")" + " part of the batch: " + str(self.batch)
+
+'''class Exercise inherited from BaseModel: has a foreign key from
+ Student table and variables subject, note and an array variable
+ subjetcs and a function which returns all the data of the table'''
+class Exercise(BaseModel):
+    subjects = [('math', "Math"), ('english', "English"), ('history', "History"), ('c_prog', "C prog"), ('swift_prog', "Swift prog")]
+    student = peewee.ForeignKeyField(Student, related_name = exercises, on_delete = "CASCADE")
+    subject = peewee.CharField(128, choices = SUBJECTS)
+    note = peewee.IntegerField(default = 0)
+    def __str__(self):
+        return "Exercise: " + self.student + " has " + self.note " in " self.subject + "(" + self.id + ")"
