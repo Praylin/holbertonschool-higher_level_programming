@@ -31,7 +31,7 @@ else:
             pass
 
         try:
-            Student.create_table()
+            Exercise.create_table()
         except peewee.OperationalError:
             pass
 
@@ -62,7 +62,7 @@ else:
             batch_data = Batch.create(school = sys.argv[3], name = sys.argv[4])
             print "New Batch: " + str(batch_data)
         elif (sys.argv[2] == "user"): #Insert data in user table
-            user_data = sys.argv[2].create(first_name = sys.argv[3], last_name = sys.argv[4], age = sys.argv[5])
+            user_data = User.create(first_name = sys.argv[3], last_name = sys.argv[4], age = sys.argv[5])
             data = __str__()
             print data
         elif (sys.argv[2] == "student"): #Insert data in student table
@@ -73,6 +73,9 @@ else:
             else:
                 print "Not enough arguments"
             print "New student: " + str(student_data)
+        elif (sys.argv[2] == "exercise"): #Insert data in Exercise table
+            exercise_data = Exercise.create(student = sys.argv[3], subject = sys.argv[4], note = sys.argv[5])
+            print "New exercise: " + str(exercise_data)
         else:
             print "No table with that name"
 
@@ -107,6 +110,14 @@ else:
                 student = Student.get(Student.id == sys.argv[3])
                 print "Delete: " + str(student)
                 student.delete_instance()
+            except:
+                print "Nothing to delete"
+
+        elif (sys.argv[2] == "exercise"):
+            try:
+                exercise = Exercise.get(Exercise.id == sys.argv[3])
+                print "Delete: " + str(exercise)
+                exercise.delete_instance()
             except:
                 print "Nothing to delete"
 
@@ -166,14 +177,7 @@ else:
             student_data.batch = sys.argv[3]
             student_data.save()
 
-    #If the first argument is print_all , print all the data in the below format
-    '''school 1>
-            <batch 1>
-                <student 1>
-                <student 2>
-            <batch 2>
-                <student 3>
-                ...'''
+    #If the first argument is print_all , print all the data in hierarchy model
     elif (sys.argv[1] == "print_all"):
         for school_data in School.select():
             print school_data
@@ -181,6 +185,37 @@ else:
                 print "\t" + str(batch_data)
                 for student_data in Student.select().where(Student.batch == batch_data):
                     print "\t \t" + str(student_data)
+                    for exercise_data in Exercise.select().where(Exercise.student == student_data):
+                        print "\t \t \t" + str(exercise_data)
+
+    #If the first argument is note_average_by_student
+    elif (sys.argv[1] == "note_average_by_student"):
+        try:
+            for exercise_data in Exercise.select().where(Exercise.student == sys.argv[2]):
+                print str(exercise_data.subject) + ":"  + str(exercise_data.note)
+        except:
+            print "Student not found"
+
+    #If the first argument is note_average_by_batch
+    elif (sys.argv[1] == "note_average_by_batch"): #Not correct
+        try:
+            note_avg = []
+            note_sum = 0
+            for exercise_data in Exercise.select().join(Student).where(Student.batch == sys.argv[2]):
+                note_avg.append(exercise_data.note)
+                note_sum = note_sum + exercise_data.note
+            print note_sum/len(note_avg)
+
+        except:
+            print "Batch not found"
+    # #If the first argument is note_average_by_school
+    # elif (sys.argv[1] == "note_average_by_school"):
+
+    #If the first argument is top_batch
+    # elif (sys.argv[1] == "top_batch"):
+
+
+
     #if the first argument is not part of this list,
     else:
         print "Undefined action", sys.argv[1]

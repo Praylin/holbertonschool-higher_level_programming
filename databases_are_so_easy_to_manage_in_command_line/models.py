@@ -50,8 +50,8 @@ class Student(User):
  subjetcs and a function which returns all the data of the table'''
 class Exercise(BaseModel):
     subjects = [('math', "Math"), ('english', "English"), ('history', "History"), ('c_prog', "C prog"), ('swift_prog', "Swift prog")]
-    student = peewee.ForeignKeyField(Student, related_name = exercises, on_delete = "CASCADE")
-    subject = peewee.CharField(128, choices = SUBJECTS)
+    student = peewee.ForeignKeyField(Student, related_name = "exercises", on_delete = "CASCADE")
+    subject = peewee.CharField(128, choices = "SUBJECTS")
     note = peewee.IntegerField(default = 0)
     def __str__(self):
-        return "Exercise: " + self.student + " has " + self.note " in " self.subject + "(" + self.id + ")"
+        return "Exercise: " + str(self.student) + " has " + str(self.note) + " in " + str(self.subject) + "(" + str(self.id) + ")"
